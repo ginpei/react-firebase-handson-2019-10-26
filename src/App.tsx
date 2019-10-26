@@ -1,11 +1,12 @@
 import React from 'react';
+import HomePage from './screens/HomePage';
 
-const HomePage: React.FC = () => {
+const App: React.FC = () => {
   return (
-    <div className="HomePage">
-      <h1>Home</h1>
+    <div>
+      <HomePage />
     </div>
   );
 };
 
-export default HomePage;
+export default App;
