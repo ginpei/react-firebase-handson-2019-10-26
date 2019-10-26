@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import DefaultLayout from '../basics/DefaultLayout';
 import NoteForm from '../independents/NoteForm';
-import { Note, useNote } from '../models/Notes';
+import { Note, useNote, saveNote } from '../models/Notes';
 import ErrorScreen from './ErrorScreen';
 import LoadingScreen from './LoadingScreen';
 import NotFoundScreen from './NotFoundScreen';
@@ -18,8 +18,7 @@ const NoteEditPage: React.FC<RouteComponentProps<{ id: string }>> = (props) => {
   const onSubmit = async (newNote: Note) => {
     setSaving(true);
     try {
-      const doc = firebase.firestore().collection('notes').doc(noteId);
-      await doc.set(newNote);
+      await saveNote(firebase.firestore(), newNote);
 
       // to avoid memory leak, wait until calling back finish before locating
       const nextPath = `/notes/${note!.id}`;

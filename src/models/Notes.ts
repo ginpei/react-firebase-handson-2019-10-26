@@ -15,7 +15,7 @@ export function useNote(
   const [noteReady, setNoteReady] = useState(false);
 
   useEffect(() => {
-    const doc = firestore.collection('notes').doc(noteId);
+    const doc = getColl(firestore).doc(noteId);
     return doc.onSnapshot({
       next(ss) {
         if (ss.exists) {
@@ -42,7 +42,7 @@ export function useNoteList(
   const [notesReady, setNotesReady] = useState(false);
 
   useEffect(() => {
-    const coll = firestore.collection('notes');
+    const coll = getColl(firestore);
     return coll.onSnapshot({
       next(ss) {
         const newNotes = ss.docs.map((docSs) => ssToNote(docSs));
@@ -59,6 +59,29 @@ export function useNoteList(
   return [notes, notesReady, notesError];
 }
 
+export async function createNewNote(
+  firestore: firebase.firestore.Firestore,
+  note: Note,
+) {
+  if (note.id) {
+    throw new Error('New note must not have ID');;
+  }
+
+  return await getColl(firestore).add(note);
+}
+
+export async function saveNote(
+  firestore: firebase.firestore.Firestore,
+  note: Note,
+) {
+  if (!note.id) {
+    throw new Error('Existing note must have ID');;
+  }
+
+  const doc = getColl(firestore).doc(note.id);
+  await doc.set(note);
+}
+
 export function pickNoteTitle(note: Note) {
   const { content } = note;
 
@@ -72,6 +95,10 @@ export function pickNoteTitle(note: Note) {
   }
 
   return line || '(Untitled)';
+}
+
+function getColl(firestore: firebase.firestore.Firestore) {
+  return firestore.collection('notes');
 }
 
 function ssToNote(ss: firebase.firestore.DocumentSnapshot): Note {

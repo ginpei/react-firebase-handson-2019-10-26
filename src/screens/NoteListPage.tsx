@@ -24,6 +24,9 @@ const NoteListPage: React.FC = () => {
   return (
     <DefaultLayout className="NoteListPage">
       <h1>NoteListPage</h1>
+      <p>
+        <Link to="/notes/create">Create</Link>
+      </p>
       <ul>
         {notes.map((note) => (
           <li key={note.id}>
