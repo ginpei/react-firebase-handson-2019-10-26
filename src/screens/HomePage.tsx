@@ -1,12 +1,15 @@
 import NiceMarkdown from '@ginpei/react-nice-markdown';
 import firebase from 'firebase/app';
+import * as firebaseui from 'firebaseui';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import DefaultLayout from '../basics/DefaultLayout';
+import { useUserId } from '../models/Users';
 
-const HomePage: React.FC = () => {
+const HomePage: React.FC<RouteComponentProps> = (props) => {
   const [message, setMessage] = useState('');
-  const [userId, setUserId] = useState('');
+  const [userId /*, userIdReady, userIdError */] = useUserId(firebase.auth());
 
   useEffect(() => {
     const firestore = firebase.firestore();
@@ -19,6 +22,14 @@ const HomePage: React.FC = () => {
     });
   }, []);
 
+  const uiConfig: firebaseui.auth.Config = {
+    credentialHelper: firebaseui.auth.CredentialHelper.NONE, // disable AccountChooser.com
+    signInOptions: [
+      firebase.auth.GithubAuthProvider.PROVIDER_ID,
+      firebase.auth.EmailAuthProvider.PROVIDER_ID,
+    ],
+  };
+
   const onUpdateClick = async () => {
     const newMessage = window.prompt('New message?', message);
     if (!newMessage) {
@@ -29,25 +40,6 @@ const HomePage: React.FC = () => {
     const doc = firestore.collection('items').doc('S3GcZi61hk8XrzGjvkch');
     const data = { message: newMessage };
     await doc.set(data);
-  };
-
-  useEffect(() => {
-    const auth = firebase.auth();
-    return auth.onAuthStateChanged(
-      (user) => {
-        if (user) {
-          setUserId(user.uid);
-        } else {
-          setUserId('');
-        }
-      },
-    )
-  }, []);
-
-  const onLogInClick = async () => {
-    const email = 'text@example.com';
-    const password = '123456';
-    await firebase.auth().signInWithEmailAndPassword(email, password);
   };
 
   const onLogOutClick = async () => {
@@ -73,10 +65,17 @@ const HomePage: React.FC = () => {
       <p>
         {'User ID: '}
         {userId}
-        <br/>
-        <button onClick={onLogInClick}>Log in</button>
-        <button onClick={onLogOutClick}>Log out</button>
       </p>
+      {userId ? (
+        <p>
+          <button onClick={onLogOutClick}>Log out</button>
+        </p>
+      ) : (
+        <StyledFirebaseAuth
+          firebaseAuth={firebase.auth()}
+          uiConfig={uiConfig}
+        />
+      )}
       <NiceMarkdown content={`
 # Hello Markdown World!
 

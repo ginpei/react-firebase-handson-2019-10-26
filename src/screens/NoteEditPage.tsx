@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import DefaultLayout from '../basics/DefaultLayout';
 import NoteForm from '../independents/NoteForm';
-import { Note, useNote, saveNote } from '../models/Notes';
+import { Note, saveNote, useNote } from '../models/Notes';
+import { useUserId } from '../models/Users';
 import ErrorScreen from './ErrorScreen';
 import LoadingScreen from './LoadingScreen';
 import NotFoundScreen from './NotFoundScreen';
@@ -14,11 +15,15 @@ const NoteEditPage: React.FC<RouteComponentProps<{ id: string }>> = (props) => {
   const [note, noteReady, noteError] = useNote(firebase.firestore(), noteId);
   const [saveError, setSaveError] = useState<Error | null>(null);
   const [saving, setSaving] = useState(false);
+  const [userId, userIdReady, userIdError] = useUserId(firebase.auth());
 
   const onSubmit = async (newNote: Note) => {
     setSaving(true);
     try {
-      await saveNote(firebase.firestore(), newNote);
+      await saveNote(
+        firebase.firestore(),
+        { ...newNote, userId },
+      );
 
       // to avoid memory leak, wait until calling back finish before locating
       const nextPath = `/notes/${note!.id}`;
@@ -31,19 +36,20 @@ const NoteEditPage: React.FC<RouteComponentProps<{ id: string }>> = (props) => {
     }
   };
 
-  if (noteError) {
+  const error = noteError || userIdError;
+  if (error) {
     return (
-      <ErrorScreen error={noteError} />
+      <ErrorScreen error={error} />
     );
   }
 
-  if (!noteReady) {
+  if (!noteReady || !userIdReady) {
     return (
       <LoadingScreen />
     );
   }
 
-  if (!note) {
+  if (!note || note.userId !== userId) {
     return (
       <NotFoundScreen />
     );
