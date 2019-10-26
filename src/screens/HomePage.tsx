@@ -1,6 +1,8 @@
+import NiceMarkdown from '@ginpei/react-nice-markdown';
 import firebase from 'firebase/app';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import DefaultLayout from '../basics/DefaultLayout';
 
 const HomePage: React.FC = () => {
   const [message, setMessage] = useState('');
@@ -29,7 +31,7 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="HomePage">
+    <DefaultLayout className="HomePage">
       <h1>Home</h1>
       <Link to="/about">About</Link>
       <p>
@@ -37,7 +39,24 @@ const HomePage: React.FC = () => {
         {message}
       </p>
       <button onClick={onUpdateClick}>Update</button>
-    </div>
+      <NiceMarkdown content={`
+# Hello Markdown World!
+
+## Usage
+
+1. Import
+
+\`\`\`js
+import NiceMarkdown from '@ginpei/react-nice-markdown';
+\`\`\`
+
+2. Invoke as a component
+
+\`\`\`js
+<NiceMarkdown content={\`# Hello Markdown World!\`} />
+\`\`\`
+`} />
+    </DefaultLayout>
   );
 };
 

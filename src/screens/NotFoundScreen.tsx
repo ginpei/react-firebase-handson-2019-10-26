@@ -1,10 +1,11 @@
 import React from 'react';
+import DefaultLayout from '../basics/DefaultLayout';
 
 const NotFoundScreen: React.FC = () => {
   return (
-    <div className="NotFoundScreen">
+    <DefaultLayout className="NotFoundScreen">
       <h1>Not Found</h1>
-    </div>
+    </DefaultLayout>
   );
 };
 
