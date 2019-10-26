@@ -33,7 +33,14 @@ const HomePage: React.FC = () => {
   return (
     <DefaultLayout className="HomePage">
       <h1>Home</h1>
-      <Link to="/about">About</Link>
+      <ul>
+        <li>
+          <Link to="/about">About</Link>
+        </li>
+        <li>
+          <Link to="/notes">Note list</Link>
+        </li>
+      </ul>
       <p>
         {'Message: '}
         {message}

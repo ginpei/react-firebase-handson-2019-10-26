@@ -5,6 +5,10 @@ import React from 'react';
 import { Route, Router, Switch } from 'react-router-dom';
 import AboutPage from './screens/AboutPage';
 import HomePage from './screens/HomePage';
+import NoteCreatePage from './screens/NoteCreatePage';
+import NoteEditPage from './screens/NoteEditPage';
+import NoteListPage from './screens/NoteListPage';
+import NoteViewPage from './screens/NoteViewPage';
 import NotFoundScreen from './screens/NotFoundScreen';
 
 firebase.initializeApp({
@@ -21,6 +25,10 @@ const App: React.FC = () => {
       <Switch>
         <Route exact={true} path="/" component={HomePage}/>
         <Route exact={true} path="/about" component={AboutPage}/>
+        <Route exact={true} path="/notes" component={NoteListPage}/>
+        <Route exact={true} path="/notes/create" component={NoteCreatePage}/>
+        <Route exact={true} path="/notes/:id" component={NoteViewPage}/>
+        <Route exact={true} path="/notes/:id/edit" component={NoteEditPage}/>
         <Route component={NotFoundScreen}/>
       </Switch>
     </Router>
